@@ -1,59 +1,36 @@
-# Tanisha Joshi — Developer Portfolio
+# Tanisha Joshi Portfolio
 
-A modern, premium full-stack developer portfolio built with React, Tailwind CSS, Framer Motion, and Lucide icons.
+A modern full-stack developer portfolio built with React and Tailwind CSS showcasing projects, skills, and software engineering work.
+
+## Live Website
+(Add your Vercel link here after deployment)
 
 ## Tech Stack
 
-- React 19 + Vite
-- Tailwind CSS v4
+- React
+- Tailwind CSS
 - Framer Motion
-- Lucide React
+- JavaScript
+- Node.js
+- FastAPI
 
-## Getting Started
+## Features
 
-```bash
-npm install
-npm run dev
-```
+- Responsive modern UI
+- Interactive project carousels
+- Smooth animations and transitions
+- Dark premium developer theme
+- Mobile-friendly design
+- GitHub and LinkedIn integration
 
-Open [http://localhost:5173](http://localhost:5173) to view the site.
+## Projects
 
-## Build for Production
+### Recipe Management Platform
+A full-stack recipe platform focused on responsive design, smooth user experience, and dynamic recipe management.
 
-```bash
-npm run build
-npm run preview
-```
+### AI Interview Simulation Platform
+An AI-powered interview preparation platform with real-time interaction and intelligent feedback workflows.
 
-## Customize
+### Plant Disease Detection System
+A machine learning project for detecting plant diseases using deep learning and image classification techniques.
 
-Update your personal links, project URLs, and resume in:
-
-- `src/data/portfolio.js` — all content and links
-- `src/assets/images/` — replace placeholder PNGs with real project screenshots
-- **Navbar photo:** replace `src/assets/images/avatar.png` with your own image (keep the same filename)
-- `public/resume.pdf` — add your resume file for the download button
-
-Regenerate placeholder images (optional):
-
-```bash
-node scripts/generate-placeholders.mjs
-```
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── layout/     # Navbar, Footer, Loading, ScrollToTop
-│   ├── sections/   # Hero, About, Skills, Projects, Education, Contact
-│   └── ui/         # Reusable UI (Button, particles, etc.)
-├── data/
-│   └── portfolio.js
-├── hooks/
-└── App.jsx
-```
-
-## Deploy
-
-Deploy the `dist` folder to Vercel, Netlify, or GitHub Pages.
