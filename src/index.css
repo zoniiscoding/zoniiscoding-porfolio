@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0f172a;
+  --color-card: #1e293b;
+  --color-primary: #8b5cf6;
+  --color-secondary: #3b82f6;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  color: var(--color-text);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #8b5cf6 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.glass {
+  background: color-mix(in srgb, #1e293b 75%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, #94a3b8 12%, transparent);
+}
+
+.glow-primary {
+  box-shadow:
+    0 0 40px color-mix(in srgb, #8b5cf6 25%, transparent),
+    0 4px 24px color-mix(in srgb, #000 40%, transparent);
+}
+
+.glow-hover:hover {
+  box-shadow:
+    0 0 48px color-mix(in srgb, #8b5cf6 35%, transparent),
+    0 8px 32px color-mix(in srgb, #000 50%, transparent);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}
