@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Sprite from "../pixel/Sprite";
+import { sprites } from "../../world/spriteManifest";
 import { navLinks, personal } from "../../data/portfolio";
 
 export default function Navbar({ activeSection }) {
@@ -28,9 +30,10 @@ export default function Navbar({ activeSection }) {
             alt={personal.name}
             className="h-9 w-9 rounded-lg object-cover ring-2 ring-primary/25 transition-all group-hover:ring-primary/50"
           />
-          <span className="hidden text-sm tracking-tight sm:inline">
+          <span className="hidden font-pixel text-sm tracking-tight sm:inline">
             Tanisha Joshi
           </span>
+          <Sprite sheet={sprites.sheets.coin} animate fps={10} className="hidden h-4 w-4 sm:block" />
         </button>
 
         <ul className="hidden items-center gap-1 md:flex">

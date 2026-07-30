@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { sprites } from "../../world/spriteManifest";
 
 export default function LoadingScreen({ onComplete }) {
   useEffect(() => {
@@ -15,28 +16,20 @@ export default function LoadingScreen({ onComplete }) {
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="relative mb-8 h-16 w-16"
+        className="mb-6"
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.4 }}
+        animate={{ scale: 1, opacity: 1, y: [0, -8, 0] }}
+        transition={{
+          scale: { duration: 0.4 },
+          opacity: { duration: 0.4 },
+          y: { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
+        }}
       >
-        <motion.div
-          className="absolute inset-0 rounded-2xl border-2 border-primary/30"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute inset-2 rounded-xl bg-gradient-to-br from-primary to-secondary"
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
-        />
-        <span className="absolute inset-0 flex items-center justify-center font-mono text-lg font-bold text-white">
-          TJ
-        </span>
+        <img src={sprites.single.macbook.src} alt="" aria-hidden="true" style={{ height: "5.5rem" }} />
       </motion.div>
 
       <motion.p
-        className="font-mono text-sm tracking-widest text-muted uppercase"
+        className="font-pixel text-sm tracking-widest text-muted uppercase"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
