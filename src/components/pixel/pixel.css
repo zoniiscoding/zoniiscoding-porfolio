@@ -1,0 +1,164 @@
+/* Pixel UI kit — retro-window chrome built from 9-sliced art via
+   border-image (see nineSlice.js). Content is normal HTML inside the
+   padding-box, so headings/landmarks/focus order are untouched. */
+
+/* ---------------------------------------------------------------------- */
+/* Button */
+
+.pixel-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-image-repeat: stretch;
+  background: transparent;
+  padding: 0.35rem 1.25rem;
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: white;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--color-soil) 45%, transparent);
+  cursor: pointer;
+  transition:
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.15s ease;
+}
+
+.pixel-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.pixel-btn:active {
+  transform: scale(0.97) translateY(0);
+}
+
+.pixel-btn:disabled {
+  cursor: default;
+  filter: grayscale(0.4) brightness(0.95);
+  transform: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Window */
+
+.pixel-window {
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(0 14px 28px color-mix(in srgb, var(--color-soil) 22%, transparent));
+}
+
+.pixel-window__top {
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-image-repeat: stretch;
+}
+
+.pixel-window__title {
+  font-family: var(--font-pixel);
+  color: white;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--color-soil) 45%, transparent);
+}
+
+.pixel-window__body {
+  border-image-repeat: stretch;
+  margin-top: -1px; /* closes the hairline seam against the title strip */
+  flex: 1;
+  padding: 1.5rem;
+  /* The source art's own interior isn't fully opaque everywhere (subtle
+     paper-texture alpha variation), which let the world layer show through
+     and hurt legibility. A solid backing sits behind the border-image fill
+     — border-image paints over backgrounds, so this only fills any gaps the
+     art's own alpha leaves, it never hides the artwork. */
+  background-color: color-mix(in srgb, var(--color-card) 94%, transparent);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Dialog */
+
+.pixel-dialog {
+  position: relative;
+  padding-top: 1.1rem;
+  padding-left: 0.5rem;
+}
+
+.pixel-dialog__heart {
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  width: 3.2rem;
+  height: auto;
+  z-index: 1;
+}
+
+.pixel-dialog__box {
+  position: relative;
+  border-image-repeat: stretch;
+  padding: 1.1rem 1.4rem 1rem;
+  min-height: 7rem;
+  background-color: color-mix(in srgb, var(--color-card) 94%, transparent);
+}
+
+.pixel-dialog__speaker {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  text-transform: uppercase;
+}
+
+.pixel-dialog__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  min-height: 3.2em;
+}
+
+.pixel-dialog__cursor {
+  display: inline-block;
+  width: 0.5em;
+  animation: dialog-caret 0.8s steps(1) infinite;
+}
+
+@keyframes dialog-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.pixel-dialog__arrow {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.6rem;
+  width: 1.4rem;
+  height: auto;
+  animation: dialog-arrow-bounce 1.1s ease-in-out infinite;
+}
+
+@keyframes dialog-arrow-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-dialog__cursor,
+  .pixel-dialog__arrow {
+    animation: none;
+  }
+}

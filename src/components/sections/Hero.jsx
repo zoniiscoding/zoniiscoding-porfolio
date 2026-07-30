@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { GitHubIcon, LinkedInIcon } from "../ui/SocialIcons";
 import Button from "../ui/Button";
-import FloatingTechIcons from "../ui/FloatingTechIcons";
+import PixelButton from "../pixel/PixelButton";
 import { personal, typingRoles } from "../../data/portfolio";
 import { useTypingEffect } from "../../hooks/useTypingEffect";
 
@@ -18,27 +18,12 @@ export default function Hero() {
       id="home"
       className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pt-24 pb-16 md:px-6 md:pt-28"
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden
-      >
-        <div className="absolute top-1/4 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]" />
-        <div className="absolute right-0 bottom-0 h-[400px] w-[400px] rounded-full bg-secondary/15 blur-[100px]" />
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"
-          animate={{ opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        />
-      </div>
-
-      <FloatingTechIcons />
-
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-sm text-primary shadow-sm"
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -99,7 +84,7 @@ export default function Hero() {
           transition={{ delay: 0.5 }}
           className="flex flex-wrap items-center justify-center gap-3"
         >
-          <Button onClick={scrollToProjects}>View Projects</Button>
+          <PixelButton onClick={scrollToProjects}>View Projects</PixelButton>
           <Button
             variant="outline"
             href={personal.github}

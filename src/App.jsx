@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import ParticleBackground from "./components/ui/ParticleBackground";
+import World from "./world/World";
+import { WorldProvider } from "./world/WorldContext";
 import LoadingScreen from "./components/layout/LoadingScreen";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -28,20 +29,25 @@ export default function App() {
       </AnimatePresence>
 
       {!loading && (
-        <div className="relative min-h-screen bg-bg">
-          <ParticleBackground />
-          <Navbar activeSection={activeSection} />
-          <main>
-            <Hero />
-            <About />
-            <Skills />
-            <Projects />
-            <Education />
-            <Contact />
-          </main>
-          <Footer />
-          <ScrollToTop />
-        </div>
+        <WorldProvider>
+          <div className="relative min-h-screen bg-bg">
+            <a href="#main-content" className="skip-link">
+              Skip to content
+            </a>
+            <World />
+            <Navbar activeSection={activeSection} />
+            <main id="main-content" className="relative z-10">
+              <Hero />
+              <About />
+              <Skills />
+              <Projects />
+              <Education />
+              <Contact />
+            </main>
+            <Footer />
+            <ScrollToTop />
+          </div>
+        </WorldProvider>
       )}
     </>
   );

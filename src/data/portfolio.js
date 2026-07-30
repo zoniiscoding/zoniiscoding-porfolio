@@ -1,9 +1,11 @@
-import recipe1 from "../assets/images/recipe-1.png";
-import recipe2 from "../assets/images/recipe-2.png";
-import aiInterview1 from "../assets/images/ai-interview-1.png";
-import aiInterview2 from "../assets/images/ai-interview-2.png";
-import plantDisease from "../assets/images/plant-disease.png";
-import avatar from "../assets/images/avatar.png";
+// Optimized at build time by scripts/build-sprites.mjs (src/assets/images -> public/img).
+// Run `npm run assets` after replacing any source image in src/assets/images/.
+const recipe1 = "/img/recipe-1.webp";
+const recipe2 = "/img/recipe-2.webp";
+const aiInterview1 = "/img/ai-interview-1.webp";
+const aiInterview2 = "/img/ai-interview-2.webp";
+const plantDisease = "/img/plant-disease.webp";
+const avatar = "/img/avatar.webp";
 
 export const personal = {
   name: "Tanisha Joshi",
@@ -13,8 +15,9 @@ export const personal = {
   email: "tanishaj1605@gmail.com",
   github: "https://github.com/zoniiscoding",
   linkedin: "https://www.linkedin.com/in/zoniiscoding/",
-  /** Replace avatar.png in src/assets/images/ with your photo */
+  /** Replace avatar.png in src/assets/images/ with your photo, then run `npm run assets` */
   avatar,
+  resume: "/resume.pdf",
 };
 
 export const navLinks = [
@@ -100,6 +103,7 @@ export const projects = [
     ],
     images: [aiInterview1, aiInterview2],
     github: "https://github.com/zoniiscoding/AI-Interview-Coach",
+    liveDemo: null,
     showLinks: true,
     gradient: "from-blue-600/30 to-cyan-500/30",
   },
@@ -119,6 +123,7 @@ export const projects = [
     ],
     images: [recipe1, recipe2],
     github: "https://github.com/zoniiscoding/recipe-app",
+    liveDemo: null,
     showLinks: true,
     gradient: "from-violet-600/30 to-blue-600/30",
   },
@@ -129,11 +134,19 @@ export const projects = [
       "A machine learning project focused on detecting plant diseases from leaf images using deep learning models and image classification workflows. The project involved experimenting with preprocessing pipelines, training optimization, and model evaluation to achieve highly accurate predictions.",
     tech: ["Python", "TensorFlow", "PyTorch", "NumPy", "Pandas"],
     images: [plantDisease],
+    liveDemo: null,
     showLinks: false,
     note: "Developed in Google Colab · Jupyter Notebook",
     gradient: "from-emerald-600/30 to-teal-500/30",
   },
 ];
+
+/**
+ * No work history exists yet — left empty rather than invented. Add entries
+ * here ({ role, company, period, description, tech }) to have an Experience
+ * window appear in the timeline alongside Education.
+ */
+export const experience = [];
 
 export const education = {
   institution: "Manipal University Jaipur",

@@ -4,7 +4,7 @@ import SocialLinks from "../ui/SocialLinks";
 
 export default function Footer() {
   return (
-    <footer className="relative mt-4 px-4 pb-8 md:px-6">
+    <footer className="relative z-10 mt-4 px-4 pb-8 md:px-6">
       <div className="mx-auto max-w-6xl">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 

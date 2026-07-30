@@ -4,8 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run assets",
     "dev": "vite",
+    "assets": "node scripts/build-sprites.mjs",
+    "prebuild": "npm run assets",
     "build": "vite build",
+    "postbuild": "node scripts/strip-source-art.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

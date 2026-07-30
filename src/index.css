@@ -1,14 +1,43 @@
 @import "tailwindcss";
 
+/*
+ * Palette sampled directly from the pixel-art assets in public/assets:
+ * grass greens, the character's shirt pink, the dialog box's cream paper,
+ * the retro window's title-bar blue, and the character's hair for ink.
+ * Variable *names* are unchanged from the original dark theme on purpose —
+ * every existing utility class (bg-primary, text-muted, etc.) keeps working
+ * and simply recolours.
+ */
 @theme {
-  --color-bg: #0f172a;
-  --color-card: #1e293b;
-  --color-primary: #8b5cf6;
-  --color-secondary: #3b82f6;
-  --color-text: #f8fafc;
-  --color-muted: #94a3b8;
+  --color-bg: #bfe3ff;
+  --color-card: #fff8ec;
+  --color-primary: #ec6a92;
+  --color-secondary: #2569ab;
+  --color-text: #3c2415;
+  --color-muted: #6b5847;
+
+  --color-grass: #6fa832;
+  --color-soil: #5a3a28;
+  --color-gold: #fbbf24;
+  --color-sky-top: #8ec9f7;
+  --color-sky-horizon: #eaf6ff;
+
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-pixel: "Pixelify Sans", var(--font-sans);
+}
+
+/*
+ * World layout constants (src/world/world.css). --player-h is the one
+ * independently-tuned value; the ground stage height, the grass-strip
+ * thickness and the feet anchor are all derived from it via calc() so they
+ * stay proportional at every breakpoint. Two independently-tuned clamp()
+ * curves drifted out of proportion at some widths in an earlier version
+ * (the player ended up taller than its own band and got clipped) — deriving
+ * everything from one value is what rules that out structurally.
+ */
+:root {
+  --player-h: clamp(7rem, 5rem + 9vw, 15rem);
 }
 
 * {
@@ -29,13 +58,20 @@ body {
   overflow-x: hidden;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.01em;
+}
+
 ::selection {
   background-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
   color: var(--color-text);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #ec6a92 0%, #2569ab 50%, #ec6a92 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -50,22 +86,22 @@ body {
 }
 
 .glass {
-  background: color-mix(in srgb, #1e293b 75%, transparent);
+  background: color-mix(in srgb, var(--color-card) 80%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, #94a3b8 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-muted) 20%, transparent);
 }
 
 .glow-primary {
   box-shadow:
-    0 0 40px color-mix(in srgb, #8b5cf6 25%, transparent),
-    0 4px 24px color-mix(in srgb, #000 40%, transparent);
+    0 0 40px color-mix(in srgb, var(--color-primary) 25%, transparent),
+    0 4px 24px color-mix(in srgb, var(--color-soil) 25%, transparent);
 }
 
 .glow-hover:hover {
   box-shadow:
-    0 0 48px color-mix(in srgb, #8b5cf6 35%, transparent),
-    0 8px 32px color-mix(in srgb, #000 50%, transparent);
+    0 0 48px color-mix(in srgb, var(--color-primary) 35%, transparent),
+    0 8px 32px color-mix(in srgb, var(--color-soil) 30%, transparent);
 }
 
 ::-webkit-scrollbar {
@@ -73,14 +109,63 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--color-muted);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
+  background: var(--color-primary);
+}
+
+/*
+ * Sprites are high-resolution illustrations in a pixel-art *style*, not
+ * low-res pixel grids upscaled — a nearest-neighbour `image-rendering:
+ * pixelated` was tested and destroys linework and faces. They are downscaled
+ * once at build time (scripts/build-sprites.mjs) and rendered at native size,
+ * so default smooth scaling is what keeps them crisp. Do not add pixelated
+ * rendering here.
+ */
+img,
+.sprite {
+  image-rendering: auto;
+}
+
+/* Visible, chunky focus ring in keeping with the retro-UI aesthetic. */
+:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-card);
+  color: var(--color-text);
+  border: 2px solid var(--color-text);
+  border-radius: 0.5rem;
+  font-family: var(--font-pixel);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
