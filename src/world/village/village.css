@@ -1,0 +1,358 @@
+/*
+ * The village: one bounded stage containing every landmark at once, an
+ * organic (not gridded) arrangement around the hero tree. Landmark
+ * coordinates are set via --x/--y custom properties per instance, with a
+ * separate --x-mobile/--y-mobile pair so the layout can redistribute itself
+ * on narrow screens without ever collapsing into a scrolling list.
+ */
+
+.village {
+  position: relative;
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+}
+
+.village__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.village__sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--color-sky-top) 0%, var(--color-sky-horizon) 55%);
+}
+
+/*
+ * One continuous field, not a tiled texture — the grass_platform asset is a
+ * thin repeat-x strip, not a seamless 2D tile, so tiling it in both axes
+ * reads as a repeating webpage pattern instead of terrain. A solid ground
+ * colour with a soft vignette (darker/cooler at the edges, like a treeline)
+ * reads as one place; texture and life come from hand-placed landscaping
+ * (VillagePath, Scatter) on top, not from a repeated background image.
+ */
+.village__ground {
+  position: absolute;
+  inset: 0;
+  top: 30%;
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 40%,
+    var(--color-grass) 0%,
+    color-mix(in srgb, var(--color-grass) 88%, var(--color-soil)) 65%,
+    color-mix(in srgb, var(--color-grass) 65%, var(--color-soil)) 100%
+  );
+  border-top-left-radius: 50% 18%;
+  border-top-right-radius: 50% 18%;
+}
+
+.village__path-tile {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -30%);
+  opacity: 0.96;
+}
+
+@media (max-width: 640px) {
+  /* Paths are curved for the desktop layout; on the reflowed mobile
+     layout they'd cut across landmarks rather than connect them, so the
+     village relies on proximity + scatter instead of a literal trail. */
+  .village__path-tile {
+    display: none;
+  }
+}
+
+.village__decor {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* A worked stone patch under a landmark (currently just the workspace) —
+   sits beneath scatter, above ground, to read as "floor" rather than a
+   scattered rock. */
+.landmark__floor {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -20%);
+  z-index: -2;
+  opacity: 0.9;
+}
+
+.village__cloud {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.85;
+  animation: cloud-drift 60s linear infinite;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-4%);
+  }
+  to {
+    transform: translateX(4%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .village__cloud {
+    animation: none;
+  }
+}
+
+/* Bridge flourish at the village edge — suggests the path continues beyond
+   what's visible, not a destination itself. */
+.village__bridge {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.95;
+  filter: drop-shadow(0 8px 10px color-mix(in srgb, var(--color-soil) 20%, transparent));
+}
+
+@media (max-width: 640px) {
+  .village__stage {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hero tree — decorative hub landmark, not an entrance. */
+
+.village__tree {
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 18%);
+  width: 20%;
+  transform: translate(-50%, -80%);
+  pointer-events: none;
+  filter: drop-shadow(0 16px 20px color-mix(in srgb, var(--color-soil) 22%, transparent));
+}
+
+@media (max-width: 640px) {
+  .village__tree {
+    left: var(--x-mobile, var(--x, 50%));
+    top: var(--y-mobile, var(--y, 18%));
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Landmarks */
+
+.landmark {
+  position: absolute;
+  isolation: isolate;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -8%);
+}
+
+@media (max-width: 640px) {
+  .landmark {
+    left: var(--x-mobile, var(--x));
+    top: var(--y-mobile, var(--y));
+  }
+}
+
+.landmark__hit {
+  position: relative;
+  display: block;
+  width: var(--landmark-w, 14vw);
+  max-width: 11rem;
+  min-width: 4.5rem;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.landmark__hit:hover,
+.landmark__hit:focus-visible {
+  transform: translateY(-4%) scale(1.04);
+}
+
+.landmark__scatter {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* A soft pool of light on the ground at every landmark's feet — the "this
+   is a place you can go" cue, at rest, before any hover. Environmental
+   (looks like light, not a UI badge), so it holds the "feels like a place"
+   principle while still solving legibility. */
+.landmark__notice {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  width: 85%;
+  height: 22%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--color-gold) 55%, transparent) 0%,
+    transparent 72%
+  );
+  animation: landmark-notice 3.6s ease-in-out infinite;
+}
+
+@keyframes landmark-notice {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(0.94);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landmark__notice {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+.landmark__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 14px color-mix(in srgb, var(--color-soil) 26%, transparent));
+}
+
+.landmark__label {
+  position: absolute;
+  bottom: -1.9rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-card) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-soil) 12%, transparent);
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  opacity: 0.94;
+  pointer-events: none;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--color-soil) 26%, transparent);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.landmark__hit:hover ~ .landmark__label,
+.landmark__hit:focus-visible ~ .landmark__label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/*
+ * The "Enter X" prompt is positioned off the player's own stand point
+ * (--x/--y, the same coordinates useVillageNav walks the player to), not
+ * the landmark's box — landmark heights vary a lot (a cottage vs. a
+ * mailbox), and anchoring to the structure kept landing the prompt right
+ * where the player's own head ends up. Riding on --player-h (the same
+ * responsive size the character itself uses) guarantees clearance above
+ * them no matter which landmark or viewport width.
+ */
+.village__prompt {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, calc(-100% - var(--player-h) - 1rem));
+  white-space: nowrap;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.55rem 1.15rem;
+  z-index: 5;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-soil) 35%, transparent);
+  animation: prompt-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (max-width: 640px) {
+  .village__prompt {
+    left: var(--x-mobile, var(--x));
+    top: var(--y-mobile, var(--y));
+    font-size: 0.9rem;
+    padding: 0.45rem 0.9rem;
+  }
+}
+
+.village__prompt kbd {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, white 30%, transparent);
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+@keyframes prompt-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - var(--player-h) - 1rem)) translateY(6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - var(--player-h) - 1rem)) translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Ambient life — every landmark has some motion at rest, cheap CSS only. */
+
+.landmark__glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--color-gold) 0%, transparent 70%);
+  animation: landmark-glow 3.2s ease-in-out infinite;
+}
+
+@keyframes landmark-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+}
+
+.landmark__sway {
+  animation: landmark-sway 4.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes landmark-sway {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+
+.landmark--visited .landmark__art {
+  filter: drop-shadow(0 10px 14px color-mix(in srgb, var(--color-soil) 26%, transparent))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--color-gold) 45%, transparent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landmark__glow,
+  .landmark__sway {
+    animation: none;
+  }
+}

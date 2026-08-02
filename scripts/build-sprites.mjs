@@ -146,6 +146,60 @@ const SINGLES = {
   chair: { file: "props/chair.png", rect: { x: 518, y: 76, w: 471, h: 814 }, scale: 0.34 },
   plant: { file: "props/plant.png", rect: { x: 543, y: 120, w: 454, h: 654 }, scale: 0.4 },
   macbook: { file: "props/macbook.png", rect: { x: 1057, y: 141, w: 439, h: 370 }, scale: 0.42 },
+
+  // --- World locations (landmarks + structures) -----------------------
+  cottage: { file: "environment/cozy_cottage.png", rect: { x: 43, y: 68, w: 930, h: 790 }, scale: 0.6 },
+  hero_tree: { file: "environment/hero_tree.png", rect: { x: 173, y: 47, w: 1217, h: 847 }, scale: 0.52 },
+  bookshelf: { file: "structures/bookshelf.png", rect: { x: 76, y: 84, w: 887, h: 716 }, scale: 0.4 },
+  signpost: { file: "structures/wooden_signpost.png", rect: { x: 207, y: 95, w: 603, h: 753 }, scale: 0.34 },
+  bridge: { file: "environment/bridge.png", rect: { x: 87, y: 143, w: 1381, h: 506 }, scale: 0.42 },
+
+  // Chest and mailbox are discrete states (closed/opening/open), triggered by
+  // scroll arrival — not a looping animation — so each state is its own plain
+  // image swapped in JS rather than a Sprite-stepped sheet.
+  chest_closed: { file: "structures/treasure_chest.png", rect: { x: 39, y: 136, w: 442, h: 249 }, scale: 0.5 },
+  chest_opening: { file: "structures/treasure_chest.png", rect: { x: 551, y: 122, w: 454, h: 264 }, scale: 0.5 },
+  chest_open: { file: "structures/treasure_chest.png", rect: { x: 1037, y: 592, w: 473, h: 275 }, scale: 0.5 },
+  mailbox_closed: { file: "structures/mailbox.png", rect: { x: 66, y: 123, w: 428, h: 300 }, scale: 0.46 },
+  mailbox_opening: { file: "structures/mailbox.png", rect: { x: 565, y: 140, w: 429, h: 283 }, scale: 0.46 },
+  mailbox_open: { file: "structures/mailbox.png", rect: { x: 1058, y: 131, w: 428, h: 291 }, scale: 0.46 },
+
+  // The board's baked-in note text ("Python", "React"...) doesn't match the
+  // real skill list, so only the empty frame is used — real notes are HTML
+  // pinned on top at runtime (see BulletinScene.jsx).
+  board_empty: { file: "structures/bulletin_board.png", rect: { x: 32, y: 184, w: 488, h: 307 }, scale: 0.55 },
+
+  // --- Modular scatter pieces: reused with variation throughout the world,
+  // never placed once (see world design notes in the asset README). -----
+  bush_1: { file: "environment/bushes.png", rect: { x: 756, y: 85, w: 716, h: 382 }, scale: 0.32 },
+  bush_2: { file: "environment/bushes.png", rect: { x: 165, y: 146, w: 532, h: 235 }, scale: 0.32 },
+  bush_3: { file: "environment/bushes.png", rect: { x: 110, y: 439, w: 701, h: 296 }, scale: 0.32 },
+  bush_4: { file: "environment/bushes.png", rect: { x: 592, y: 543, w: 884, h: 348 }, scale: 0.32 },
+  bush_mound: { file: "environment/bridge.png", rect: { x: 499, y: 631, w: 990, h: 291 }, scale: 0.32 },
+
+  rock_1: { file: "environment/rock_mushroom_pack.png", rect: { x: 1055, y: 91, w: 461, h: 190 }, scale: 0.3 },
+  rock_2: { file: "environment/rock_mushroom_pack.png", rect: { x: 563, y: 92, w: 458, h: 186 }, scale: 0.3 },
+  rock_3: { file: "environment/rock_mushroom_pack.png", rect: { x: 117, y: 135, w: 409, h: 142 }, scale: 0.3 },
+  rock_4: { file: "environment/rock_mushroom_pack.png", rect: { x: 683, y: 333, w: 722, h: 221 }, scale: 0.3 },
+  rock_5: { file: "environment/rock_mushroom_pack.png", rect: { x: 107, y: 349, w: 530, h: 183 }, scale: 0.3 },
+  mushroom_1: { file: "environment/rock_mushroom_pack.png", rect: { x: 135, y: 613, w: 405, h: 207 }, scale: 0.3 },
+  mushroom_2: { file: "environment/rock_mushroom_pack.png", rect: { x: 583, y: 627, w: 451, h: 197 }, scale: 0.3 },
+  mushroom_3: { file: "environment/rock_mushroom_pack.png", rect: { x: 1104, y: 643, w: 387, h: 180 }, scale: 0.3 },
+
+  // Stone path tiles: a modular set (straights, corners, T-junctions, end
+  // caps) tiled into continuous trails between locations, not decoration.
+  path_1: { file: "environment/stone_path_tile.png", rect: { x: 660, y: 75, w: 270, h: 170 }, scale: 0.42 },
+  path_2: { file: "environment/stone_path_tile.png", rect: { x: 345, y: 89, w: 273, h: 143 }, scale: 0.42 },
+  path_3: { file: "environment/stone_path_tile.png", rect: { x: 168, y: 115, w: 165, h: 120 }, scale: 0.42 },
+  path_4: { file: "environment/stone_path_tile.png", rect: { x: 922, y: 122, w: 477, h: 120 }, scale: 0.42 },
+  path_5: { file: "environment/stone_path_tile.png", rect: { x: 967, y: 290, w: 465, h: 107 }, scale: 0.42 },
+  path_6: { file: "environment/stone_path_tile.png", rect: { x: 135, y: 293, w: 417, h: 111 }, scale: 0.42 },
+  path_7: { file: "environment/stone_path_tile.png", rect: { x: 584, y: 299, w: 354, h: 273 }, scale: 0.42 },
+  path_8: { file: "environment/stone_path_tile.png", rect: { x: 909, y: 456, w: 534, h: 124 }, scale: 0.42 },
+  path_9: { file: "environment/stone_path_tile.png", rect: { x: 124, y: 463, w: 497, h: 131 }, scale: 0.42 },
+  path_10: { file: "environment/stone_path_tile.png", rect: { x: 141, y: 634, w: 451, h: 234 }, scale: 0.42 },
+  path_11: { file: "environment/stone_path_tile.png", rect: { x: 923, y: 634, w: 507, h: 237 }, scale: 0.42 },
+  path_12: { file: "environment/stone_path_tile.png", rect: { x: 516, y: 636, w: 501, h: 256 }, scale: 0.42 },
 };
 
 /**

@@ -3,12 +3,13 @@ import Sprite from "../../components/pixel/Sprite";
 import { sprites } from "../spriteManifest";
 import { useActor } from "../useActor";
 
-// World px of travel per walk-cycle frame advance. Distance-driven, not
-// time-driven — this is what keeps the feet planted instead of sliding: if
-// the visitor stops mid-scroll, the frame simply stops with them.
-const STRIDE = 60;
+// Percentage-points of stage distance travelled per walk-cycle frame advance.
+// Distance-driven, not time-driven — this is what keeps the feet planted
+// instead of sliding: if a walk is interrupted mid-tween, the frame simply
+// stops with it rather than looping on a timer regardless of motion.
+const STRIDE = 4.5;
 
-// Must match the .player__pose--wave animation-duration in world.css.
+// Must match .player__pose--wave's animation-duration in world.css.
 const WAVE_DURATION_MS = 950;
 
 export default function Player() {
@@ -17,22 +18,42 @@ export default function Player() {
   const walk = sprites.player.walk;
 
   const world = useActor({
-    onFrame: ({ worldOffset, moving }) => {
-      if (!moving || !walkRef.current) return;
-      const idx = Math.floor(Math.abs(worldOffset) / STRIDE) % walk.frames;
-      walkRef.current.style.backgroundPositionX = `${(idx / (walk.frames - 1)) * 100}%`;
+    onFrame: ({ x, y, distance, moving }) => {
+      const root = rootRef.current;
+      if (!root) return;
+      root.style.left = `${x}%`;
+      root.style.top = `${y}%`;
+      if (moving && walkRef.current) {
+        const idx = Math.floor(distance / STRIDE) % walk.frames;
+        walkRef.current.style.backgroundPositionX = `${(idx / (walk.frames - 1)) * 100}%`;
+      }
     },
     onStateChange: ({ moving, facing }) => {
       const root = rootRef.current;
       if (!root) return;
-      if (root.dataset.state !== "wave") root.dataset.state = moving ? "walk" : "idle";
+      // A new walk always wins, even over a wave still mid-playback — you
+      // shouldn't keep waving once you've set off toward the next landmark.
+      // Arrival (moving: false) still defers to an active wave, since greet()
+      // is what sets "wave" in the first place, right after this fires.
+      if (moving) root.dataset.state = "walk";
+      else if (root.dataset.state !== "wave") root.dataset.state = "idle";
       root.style.setProperty("--facing", facing);
     },
   });
 
-  // One-off greeting gesture, e.g. triggered when the About section scrolls
-  // into view — see useSectionEvents. Independent of the continuous
-  // idle/walk state machine above.
+  // onFrame only fires once movement starts — without this, the player has
+  // no left/top at all until the first walkTo(), since nothing ever pushed
+  // the engine's initial position to the DOM.
+  useEffect(() => {
+    const { x, y } = world.getSnapshot();
+    const root = rootRef.current;
+    if (root) {
+      root.style.left = `${x}%`;
+      root.style.top = `${y}%`;
+    }
+  }, [world]);
+
+  // One-off greeting gesture, e.g. triggered on arrival at a landmark.
   useEffect(() => {
     return world.onGreet(() => {
       const root = rootRef.current;

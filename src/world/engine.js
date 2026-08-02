@@ -1,102 +1,104 @@
 /**
- * Framework-agnostic scroll-driven world engine. One requestAnimationFrame
- * loop for the whole site, shared by every consumer via WorldContext.
+ * Position-tween world engine. One requestAnimationFrame loop for the whole
+ * village, shared by every consumer via WorldContext.
  *
- * Deliberately small: purely time-based ambient loops (idle breathing, coin
- * spin, cloud drift, sparkle twinkle) are plain CSS `steps()`/keyframe
- * animations and never touch this engine. This only computes the things that
- * are genuinely tied to *scroll* — how far the world has travelled, and
- * whether the player is currently walking — and hands that off to
- * subscribers, which mutate their own DOM nodes directly. No subscriber ever
- * triggers a React re-render from here.
+ * The player has a position `{x, y}` in percentage coordinates within the
+ * village stage. Calling `walkTo(x, y)` eases the player there over time,
+ * driving the same distance-based walk-cycle math the site already used for
+ * scroll (frame index from distance travelled, not elapsed time — so a walk
+ * never looks like it's sliding). The loop only runs while something is
+ * actually moving; it stops itself the instant the player arrives, rather
+ * than ticking 60x/second for a scene that isn't changing.
+ *
+ * Ambient, purely time-based loops (idle breathing, coin spin, cloud drift)
+ * are still plain CSS — they never touch this engine.
  */
 
-// How many world px the ground/player travel per page px scrolled. Kept below
-// 1 so the world reads as a bigger place than the page is tall.
-const WORLD_SPEED = 0.55;
-// Smoothed px/ms scroll speed above which the player is considered "walking".
-const WALK_THRESHOLD = 0.12;
-// How long (ms) speed must stay below threshold before switching back to idle.
-// Prevents flicker between idle/walk at the edge of a scroll gesture.
-const IDLE_DELAY = 160;
-// Exponential smoothing factor for velocity — higher reacts faster, lower is calmer.
-const VELOCITY_SMOOTHING = 0.2;
+const DEFAULT_DURATION = 1300; // ms for a typical walk across the village
 
-export function createWorld() {
+function easeInOutQuad(t) {
+  return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+}
+
+export function createWorld({ startX = 50, startY = 62 } = {}) {
   let running = false;
   let rafId = null;
   let lastT = 0;
-  let lastScrollY = typeof window === "undefined" ? 0 : window.scrollY;
-  let smoothedVelocity = 0;
-  let worldOffset = lastScrollY * WORLD_SPEED;
+
+  let x = startX;
+  let y = startY;
+  let fromX = x;
+  let fromY = y;
+  let targetX = null;
+  let targetY = null;
+  let elapsed = 0;
+  let duration = DEFAULT_DURATION;
+  let distance = 0; // cumulative, for walk-frame stepping — never resets
   let moving = false;
   let facing = 1;
-  let idleTimer = 0;
+  let arriveCallback = null;
 
-  /** Called every animation frame. For continuous values: ground offset, walk-frame index. */
   const frameListeners = new Set();
-  /** Called only when `moving` or `facing` actually change. For CSS state/class toggles. */
   const stateListeners = new Set();
-  /** One-shot broadcast, e.g. "play the wave gesture now" — see Player.jsx / About.jsx. */
   const greetListeners = new Set();
+
+  function snapshot(dt = 0) {
+    return { x, y, moving, facing, distance, dt };
+  }
 
   function tick(t) {
     if (!running) return;
-
     const dt = lastT ? t - lastT : 16;
     lastT = t;
 
-    const scrollY = window.scrollY;
-    const dy = scrollY - lastScrollY;
-    lastScrollY = scrollY;
+    if (targetX !== null) {
+      elapsed += dt;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutQuad(progress);
+      const prevX = x;
+      const prevY = y;
+      x = fromX + (targetX - fromX) * eased;
+      y = fromY + (targetY - fromY) * eased;
+      distance += Math.hypot(x - prevX, y - prevY);
+      if (x !== prevX) facing = x > prevX ? 1 : -1;
+      moving = progress < 1;
 
-    const instantVelocity = dy / Math.max(dt, 1);
-    smoothedVelocity += (instantVelocity - smoothedVelocity) * VELOCITY_SMOOTHING;
-    worldOffset += dy * WORLD_SPEED;
-
-    const speed = Math.abs(smoothedVelocity);
-    let nextMoving = moving;
-    if (speed > WALK_THRESHOLD) {
-      nextMoving = true;
-      idleTimer = 0;
-    } else {
-      idleTimer += dt;
-      if (idleTimer > IDLE_DELAY) nextMoving = false;
+      if (progress >= 1) {
+        x = targetX;
+        y = targetY;
+        targetX = null;
+        targetY = null;
+        const cb = arriveCallback;
+        arriveCallback = null;
+        for (const fn of stateListeners) fn(snapshot(dt));
+        cb?.();
+      }
     }
 
-    const nextFacing = Math.abs(dy) > 0.5 ? (dy > 0 ? 1 : -1) : facing;
+    for (const fn of frameListeners) fn(snapshot(dt));
 
-    const state = { worldOffset, moving: nextMoving, facing: nextFacing, dt };
-    for (const fn of frameListeners) fn(state);
-
-    if (nextMoving !== moving || nextFacing !== facing) {
-      moving = nextMoving;
-      facing = nextFacing;
-      for (const fn of stateListeners) fn(state);
-    }
-
-    rafId = requestAnimationFrame(tick);
+    rafId = moving || targetX !== null ? requestAnimationFrame(tick) : null;
   }
 
   function handleVisibility() {
     if (document.hidden) {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
-    } else if (running && !rafId) {
+    } else if (running && !rafId && (moving || targetX !== null)) {
       lastT = 0;
       rafId = requestAnimationFrame(tick);
     }
   }
 
   return {
-    /** No-ops if prefers-reduced-motion is set — the world stays static on purpose. */
+    /** No-ops the animated tween if prefers-reduced-motion is set — walkTo()
+        still moves the player, just instantly, since the engine checks
+        `running` itself rather than requiring every caller to. */
     start() {
       if (running) return;
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-      running = true;
+      running = !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
       lastT = 0;
       document.addEventListener("visibilitychange", handleVisibility);
-      rafId = requestAnimationFrame(tick);
     },
     stop() {
       running = false;
@@ -104,21 +106,55 @@ export function createWorld() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
     },
-    /** state: { worldOffset, moving, facing, dt } — fires every rAF tick. */
+    /** Ease the player to (nx, ny) — percentage coordinates within the stage.
+        `onArrive` fires once, on actual arrival (or synchronously if motion
+        is reduced and the move was instant). */
+    walkTo(nx, ny, { onArrive, duration: dur = DEFAULT_DURATION } = {}) {
+      if (!running) {
+        x = nx;
+        y = ny;
+        targetX = null;
+        targetY = null;
+        moving = false;
+        for (const fn of stateListeners) fn(snapshot());
+        for (const fn of frameListeners) fn(snapshot());
+        onArrive?.();
+        return;
+      }
+      fromX = x;
+      fromY = y;
+      targetX = nx;
+      targetY = ny;
+      elapsed = 0;
+      duration = dur;
+      arriveCallback = onArrive;
+      // stateListeners otherwise only fires on arrival (inside tick's
+      // progress>=1 branch) — without this, a consumer's onStateChange
+      // never learns a walk has *started*, so a pose set by something
+      // else (e.g. the wave gesture) would stay stuck for the whole walk.
+      moving = true;
+      for (const fn of stateListeners) fn(snapshot());
+      if (!rafId) {
+        lastT = 0;
+        rafId = requestAnimationFrame(tick);
+      }
+    },
+    /** state: { x, y, moving, facing, distance, dt } — fires every rAF tick
+        while something is moving. */
     onFrame(fn) {
       frameListeners.add(fn);
       return () => frameListeners.delete(fn);
     },
-    /** state: { worldOffset, moving, facing, dt } — fires only on moving/facing change. */
+    /** Fires only when `moving` changes, plus once on arrival. */
     onStateChange(fn) {
       stateListeners.add(fn);
       return () => stateListeners.delete(fn);
     },
     getSnapshot() {
-      return { worldOffset, moving, facing };
+      return snapshot();
     },
-    /** Independent of start()/stop() — works even under reduced motion, where
-        the CSS animation it triggers simply resolves instantly. */
+    /** Independent of movement — works even under reduced motion, where the
+        CSS animation it triggers simply resolves instantly. */
     greet() {
       for (const fn of greetListeners) fn();
     },

@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { createWorld } from "./engine";
+import { PLAYER_START } from "./village/landmarks";
 
 const WorldContext = createContext(null);
 
 export function WorldProvider({ children }) {
-  const world = useMemo(() => createWorld(), []);
+  const world = useMemo(() => createWorld({ startX: PLAYER_START.x, startY: PLAYER_START.y }), []);
 
   useEffect(() => {
     world.start();

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { User, Code, Radio } from "lucide-react";
 import SectionHeading from "../ui/SectionHeading";
 import PixelDialog from "../pixel/PixelDialog";
+import CottageScene from "../../world/scenes/CottageScene";
 import { useWorld } from "../../world/WorldContext";
 import { useSectionEvents } from "../../hooks/useSectionEvents";
 import { aboutParagraphs } from "../../data/portfolio";
@@ -51,15 +52,18 @@ export default function About() {
   return (
     <section id="about" ref={sectionRef} className="relative px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          label="About"
-          title="How I Build"
-          subtitle="Software, systems, and experiences that feel intentional"
-        />
+        <CottageScene />
 
-        <div className="grid gap-8 lg:grid-cols-5 lg:gap-10">
-          <div className="lg:col-span-3">
-            <PixelDialog speaker="Tanisha" text={aboutParagraphs[0]} active={dialogueActive} />
+        <div className="scene-band__anchor">
+          <SectionHeading
+            label="About"
+            title="How I Build"
+            subtitle="Software, systems, and experiences that feel intentional"
+          />
+
+          <div className="grid gap-8 lg:grid-cols-5 lg:gap-10">
+            <div className="lg:col-span-3">
+              <PixelDialog speaker="Tanisha" text={aboutParagraphs[0]} active={dialogueActive} />
 
             <motion.div
               initial="hidden"
@@ -121,6 +125,7 @@ export default function About() {
                 <p className="text-sm leading-relaxed text-muted">{desc}</p>
               </motion.div>
             ))}
+          </div>
           </div>
         </div>
       </div>

@@ -4,20 +4,24 @@ import ProjectCarousel from "../ui/ProjectCarousel";
 import SectionHeading from "../ui/SectionHeading";
 import PixelWindow from "../pixel/PixelWindow";
 import PixelButton from "../pixel/PixelButton";
+import Terminal from "../pixel/Terminal";
+import WorkspaceScene from "../../world/scenes/WorkspaceScene";
 import { projects } from "../../data/portfolio";
 
 export default function Projects() {
   return (
     <section id="projects" className="relative px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto max-w-6xl">
+        <WorkspaceScene />
         <SectionHeading
           label="Projects"
           title="Featured Work"
           subtitle="Products built across full-stack engineering, AI, and machine learning"
         />
 
-        <div className="flex flex-col gap-10">
-          {projects.map((project) => (
+        <Terminal>
+          <div className="flex flex-col gap-10">
+            {projects.map((project) => (
             <PixelWindow key={project.id} title={project.title} bodyClassName="!p-0">
               <div className="grid lg:grid-cols-5">
                 <div className={`relative bg-gradient-to-br ${project.gradient} p-4 lg:col-span-2 lg:p-5`}>
@@ -62,8 +66,9 @@ export default function Projects() {
                 </div>
               </div>
             </PixelWindow>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Terminal>
       </div>
     </section>
   );

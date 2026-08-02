@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 import Sprite from "../pixel/Sprite";
 import { sprites } from "../../world/spriteManifest";
 import { navLinks, personal } from "../../data/portfolio";
 
-export default function Navbar({ activeSection }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const scrollTo = (id) => {
-    setMobileOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
+/**
+ * The fast path: every link walks the player to that landmark and opens it
+ * directly on arrival (no explore prompt) — see useVillageNav's `autoOpen`.
+ * The logo returns to the village (closes whatever's open).
+ *
+ * Every link stays visible at every width — no hamburger/dropdown to open
+ * first. On narrow screens the row wraps onto a second line instead of
+ * hiding behind a menu, trading a taller header for one-tap access.
+ */
+export default function Navbar({ activeId, onNavigate, onGoHome }) {
   return (
     <motion.header
       initial={{ y: -80, opacity: 0 }}
@@ -20,35 +20,28 @@ export default function Navbar({ activeSection }) {
       transition={{ duration: 0.6, delay: 0.2 }}
       className="fixed top-0 right-0 left-0 z-50 px-4 pt-4 md:px-6"
     >
-      <nav className="glass mx-auto flex max-w-6xl items-center justify-between rounded-2xl px-4 py-3 shadow-lg md:px-6">
-        <button
-          onClick={() => scrollTo("home")}
-          className="group flex items-center gap-2.5 font-semibold text-text"
-        >
+      <nav className="glass mx-auto flex max-w-6xl flex-col items-center gap-2 rounded-2xl px-4 py-3 shadow-lg sm:flex-row sm:justify-between md:px-6">
+        <button onClick={onGoHome} className="group flex items-center gap-2.5 font-semibold text-text">
           <img
             src={personal.avatar}
             alt={personal.name}
             className="h-9 w-9 rounded-lg object-cover ring-2 ring-primary/25 transition-all group-hover:ring-primary/50"
           />
-          <span className="hidden font-pixel text-sm tracking-tight sm:inline">
-            Tanisha Joshi
-          </span>
-          <Sprite sheet={sprites.sheets.coin} animate fps={10} className="hidden h-4 w-4 sm:block" />
+          <span className="font-pixel text-sm tracking-tight">Tanisha Joshi</span>
+          <Sprite sheet={sprites.sheets.coin} animate fps={10} className="h-4 w-4" />
         </button>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="flex flex-wrap items-center justify-center gap-x-0.5 gap-y-1">
           {navLinks.map(({ id, label }) => (
             <li key={id}>
               <button
-                onClick={() => scrollTo(id)}
-                className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  activeSection === id
-                    ? "text-text"
-                    : "text-muted hover:text-text"
+                onClick={() => onNavigate(id)}
+                className={`relative rounded-lg px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-colors sm:px-3 sm:py-2 sm:text-sm ${
+                  activeId === id ? "text-text" : "text-muted hover:text-text"
                 }`}
               >
                 {label}
-                {activeSection === id && (
+                {activeId === id && (
                   <motion.span
                     layoutId="nav-indicator"
                     className="absolute inset-0 -z-10 rounded-lg bg-primary/15"
@@ -59,43 +52,7 @@ export default function Navbar({ activeSection }) {
             </li>
           ))}
         </ul>
-
-        <button
-          className="rounded-lg p-2 text-text md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
       </nav>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="glass mx-auto mt-2 max-w-6xl rounded-2xl p-4 md:hidden"
-          >
-            <ul className="flex flex-col gap-1">
-              {navLinks.map(({ id, label }) => (
-                <li key={id}>
-                  <button
-                    onClick={() => scrollTo(id)}
-                    className={`w-full rounded-lg px-4 py-3 text-left text-sm font-medium ${
-                      activeSection === id
-                        ? "bg-primary/15 text-text"
-                        : "text-muted"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.header>
   );
 }
