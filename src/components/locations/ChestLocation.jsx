@@ -63,7 +63,7 @@ export default function ChestLocation({ titleId, firstVisit }) {
             className="flex flex-col items-center gap-3 text-center"
           >
             <p className="max-w-sm text-sm leading-relaxed text-muted">
-              A one-page summary of my experience, projects, and education — opens in a new tab.
+              A one-page summary of my experience, projects, and education.
             </p>
             <PixelButton href={personal.resume} external icon={FileText}>
               View Resume
